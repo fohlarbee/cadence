@@ -6,6 +6,7 @@ import { loadTimetableView } from "@/lib/schedule-service";
 import { Card, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { TimetableView } from "@/components/timetable-view";
+import { ShareLink } from "@/components/share-link";
 import { publishAction, unpublishAction, deleteTimetable } from "@/app/actions/timetable";
 
 interface Unplaced {
@@ -64,13 +65,10 @@ export default async function TimetableDetail({
             >
               {timetable.hardOk ? "Conflict-free" : `${unplaced.length} unplaced`}
             </span>
-            {timetable.status === "published" && timetable.publicSlug && (
-              <Link
-                href={`/t/${timetable.publicSlug}`}
-                className="rounded-full bg-surface-2 px-2 py-0.5 text-xs text-muted hover:text-fg"
-              >
-                Public · /t/{timetable.publicSlug}
-              </Link>
+            {timetable.status === "published" && (
+              <span className="rounded-full bg-surface-2 px-2 py-0.5 text-xs text-muted">
+                Published
+              </span>
             )}
           </div>
         </div>
@@ -93,6 +91,17 @@ export default async function TimetableDetail({
           </form>
         </div>
       </div>
+
+      {timetable.status === "published" && timetable.publicSlug ? (
+        <div className="no-print">
+          <ShareLink slug={timetable.publicSlug} />
+        </div>
+      ) : (
+        <p className="no-print rounded-2xl border border-hairline bg-surface p-4 text-sm text-muted">
+          This timetable is a draft. Click <span className="font-medium text-fg">Publish</span>{" "}
+          to get a shareable public link students and lecturers can open.
+        </p>
+      )}
 
       <div className="no-print grid grid-cols-2 gap-4 sm:grid-cols-4">
         <Metric label="Classes placed" value={`${util?.placedEvents ?? view.entries.length}/${util?.totalEvents ?? view.entries.length}`} />
